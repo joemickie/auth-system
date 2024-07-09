@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
+import { User, Role } from '../entities/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
@@ -15,19 +15,11 @@ export class AuthService {
         private jwtService: JwtService,
     ) { }
 
-    //   async register(createUserDto: CreateUserDto): Promise<User> {
-    //     const { email, password } = createUserDto;
-    //     const hashedPassword = await bcrypt.hash(password, 10);
-    //     const user = this.userRepository.create({ email, password: hashedPassword });
-    //     await this.userRepository.save(user);
-    //     return user;
-    //   }
-
     async register(createUserDto: CreateUserDto): Promise<{ message: string }> {
         const { email, password } = createUserDto;
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = this.userRepository.create({ email, password: hashedPassword });
+        const user = this.userRepository.create({ email, password: hashedPassword, role: Role.User });
         try {
             await this.userRepository.save(user);
             return { message: 'User created successfully' };
@@ -39,6 +31,21 @@ export class AuthService {
             }
         }
     }
+
+    async registerAdmin(createAdminDto: CreateUserDto): Promise<User> {
+        const { email, password } = createAdminDto;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = this.userRepository.create({ email, password: hashedPassword, role: Role.Admin });
+        try {
+          await this.userRepository.save(user);
+          return user;
+        } catch (error) {
+          if (error.code === '23505') {
+            throw new ConflictException('Admin user already exists');
+          }
+          throw error;
+        }
+      }
 
     async validateUser(email: string, password: string): Promise<User> {
         const user = await this.userRepository.findOne({ where: { email } });

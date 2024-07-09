@@ -5,6 +5,7 @@ import { LoginUserDto } from '../dto/login-user.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -15,15 +16,20 @@ export class AuthController {
     return this.authService.register(createUserDto);
   }
 
+  @Post('register-admin')
+  async registerAdmin(@Body() createUserDto: CreateUserDto) {
+    return this.authService.registerAdmin(createUserDto);
+  }
+
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
   }
 
+@Post('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
-  @Post('admin')
-  async adminRoute(@Request() req) {
-    return 'Admin route';
+  @Roles(Role.Admin)
+  async adminAccess() {
+    return { message: 'Welcome to the admin route' };
   }
 }

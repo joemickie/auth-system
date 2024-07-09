@@ -21,8 +21,8 @@ This project implements a NestJS user authentication and authorization system us
     Create a `.env` file in the root directory and add the following variables:
     ```env
     DATABASE_HOST=localhost
-    DATABASE_PORT=3306
-    DATABASE_USER=root
+    DATABASE_PORT=5432
+    DATABASE_USER=postgres
     DATABASE_PASSWORD=rootpassword
     DATABASE_NAME=auth_system
 
@@ -37,7 +37,7 @@ This project implements a NestJS user authentication and authorization system us
 
 ## Endpoints
 
-### Register
+### Register User
 - **URL:** `/auth/register`
 - **Method:** `POST`
 - **Body:**
@@ -48,13 +48,24 @@ This project implements a NestJS user authentication and authorization system us
     }
     ```
 
+### Register
+- **URL:** `/auth/register-admin`
+- **Method:** `POST`
+- **Body:**
+    ```json
+    {
+      "email": "admin@example.com",
+      "password": "password"
+    }
+    ```
+
 ### Login
 - **URL:** `/auth/login`
 - **Method:** `POST`
 - **Body:**
     ```json
     {
-      "email": "user@example.com",
+      "email": "example@example.com",
       "password": "password"
     }
     ```
@@ -65,7 +76,7 @@ This project implements a NestJS user authentication and authorization system us
 - **Headers:**
     ```json
     {
-      "Authorization": "Bearer <JWT_TOKEN>"
+      "Authorization": "Bearer <accesss_token_login_admin>"
     }
     ```
 - **Body:** Empty
