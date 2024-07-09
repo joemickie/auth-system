@@ -48,7 +48,7 @@ This project implements a NestJS user authentication and authorization system us
     }
     ```
 
-### Register
+### Register Admin
 - **URL:** `/auth/register-admin`
 - **Method:** `POST`
 - **Body:**
